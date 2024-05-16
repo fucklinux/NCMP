@@ -1,0 +1,602 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <title>云音乐歌单</title>
+    <style>
+        * {
+            font-family: Sans-serif;
+        }
+
+        html {
+            background: #ddd;
+        }
+
+        .splash {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #2196F3;
+            transition: 0.4s;
+            z-index: 1;
+        }
+
+        .splash svg {
+            position: fixed;
+            color: #fff;
+            left: calc(50% - 128px);
+            top: calc(50% - 128px);
+        }
+
+        .splash-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .card {
+            background: #fff;
+            width: 90%;
+            margin: 16px calc(5% - 12px);
+            padding: 24px 12px;
+            box-shadow: 0 2px 8px 1px rgba(128, 128, 128, 0.5);
+        }
+
+        .cover-img {
+            width: 192px;
+            margin-left: calc(50% - 96px);
+        }
+
+        .btn {
+            border: none;
+            outline: none;
+            padding: 8px 32px;
+            font-size: 16px;
+            background: #ddd;
+            transition-property: transform;
+            transition-duration: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            outline: 2px solid #333;
+        }
+
+        .btn:active {
+            background: #aaa;
+            outline: 2px solid rgba(0, 0, 0, 0);
+            transform: scale(0.95);
+            transition-duration: 0s;
+            font-weight: bold;
+        }
+
+        .info-list {
+            text-align: left;
+            width: 90%;
+            margin-left: 5%;
+        }
+
+        .list-item {
+            padding: 4px 8px;
+            transition-property: transform, font-weight;
+            transition-duration: 0.2s;
+        }
+
+        .list-item-active {
+            background: #BBDEFB;
+        }
+
+        .list-item:hover {
+            background: #ddd;
+        }
+
+        .list-item-active:hover {
+            background: #90CAF9;
+        }
+
+        .list-item:active {
+            background: #aaa;
+            transform: scale(0.95);
+            transition: 0s;
+            font-weight: bold;
+        }
+
+        .list-item-active:active {
+            background: #64B5F6;
+        }
+
+        .list-item-title {
+            font-size: 16px;
+        }
+
+        .list-item-content {
+            font-size: 12.5px;
+            opacity: 0.6;
+        }
+
+        .dialog {
+            position: fixed;
+            width: 80%;
+            left: calc(10% - 16px);
+            height: 60%;
+            top: calc(20% - 16px);
+            background: #fff;
+            z-index: 3;
+            padding: 16px;
+            outline: 1.5px solid #1976D2;
+            transform: scale(1.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.25s;
+            box-shadow: 0 10px 20px 5px rgba(64, 64, 64, 0.5);
+        }
+
+        @media(min-width:640px) {
+            .dialog {
+                width: 50%;
+                left: calc(25% - 16px);
+                transform: scale(1.05);
+            }
+        }
+
+        .dialog-tiny {
+            height: 40%;
+            top: calc(30% - 16px);
+            width: 60%;
+            left: calc(20% - 16px);
+        }
+
+        .dialog-opened {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .dialog-title {
+            width: 100%;
+            height: 10%;
+            font-size: 20px;
+            overflow-y: scroll;
+            scrollbar-width: none;
+        }
+
+        .dialog-title::webkit-scrollbar {
+            display: none;
+        }
+
+        .dialog-tiny .dialog-title {
+            height: 15%;
+        }
+
+        .dialog-content {
+            width: 100%;
+            height: calc(80% - 36px);
+            padding: 12px 0;
+            overflow-y: scroll;
+        }
+
+        .dialog-tiny .dialog-content {
+            height: calc(70% - 36px);
+        }
+
+        .dialog-btns {
+            width: 100%;
+            height: calc(10% - 4px);
+            padding-top: 4px;
+            text-align: right;
+            scrollbar-width: none;
+        }
+
+        .dialog-btns::webkit-scrollbar {
+            display: none;
+        }
+
+        .dialog-tiny .dialog-btns {
+            height: 15%;
+        }
+
+        .overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background: rgba(255, 255, 255, 0.65);
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.25s;
+        }
+
+        .overlay-opened {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .link {
+            color: #1976D2;
+            text-decoration: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+            -webkit-user-select: none;
+            -moz-user-focus: none;
+            -moz-user-select: none;
+        }
+
+        .link-disabled {
+            color: #777 !important;
+        }
+
+        .link:hover {
+            color: #777;
+        }
+
+        .link:active {
+            color: #aaa;
+        }
+
+        .float-cover {
+            position: fixed;
+            width: 64px;
+            height: 64px;
+            right: 16px;
+            bottom: 16px;
+            box-shadow: 0 4px 8px 2px rgba(64, 64, 64, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition-property: opacity, transform;
+            transition-duration: 0.3s, 0.2s;
+            transition-delay: 0.3s, 0s;
+        }
+
+        .float-cover:active {
+            transform: scale(0.9);
+            transition: 0s;
+        }
+
+        .float-cover-opened {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-bar {
+            width: calc(90% - 16px);
+            height: 32px;
+            margin-left: 5%;
+            padding: 0 8px;
+            outline: 2px solid #ccc;
+            border: none;
+            font-size: 16px;
+        }
+
+        .search-bar:hover {
+            outline: 2px solid #666;
+        }
+
+        .search-bar:focus {
+            outline: 2px solid #1976D2;
+        }
+
+        @media(min-width:640px) {
+            .card {
+                width: 70%;
+                margin: 32px calc(15% - 12px);
+            }
+
+            .info-list {
+                width: 50%;
+                margin-left: 25%;
+            }
+
+            .list-item:active {
+                transform: scale(0.98);
+            }
+
+            .dialog-tiny {
+                width: 40%;
+                left: calc(30% - 16px);
+            }
+
+            .float-cover {
+                width: 96px;
+                height: 96px;
+                right: 24px;
+                bottom: 24px;
+            }
+
+            .search-bar {
+                width: calc(50% - 16px);
+                margin-left: 25%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="splash" id="splash">
+        <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4V7h4V3z" />
+        </svg>
+    </div>
+    <div class="card">
+        <img class="cover-img" id="coverImg">
+        <h2 id="title" style="margin: 8px 0 0 0;text-align: center;"></h2>
+        <div style="text-align: center;">
+            <p id="description" style="margin: 6px 0 0 0;font-style: italic;"></p>
+            <div class="info-list">
+                <div style="font-weight: bold;display: inline-block;margin: 6px 0 0 0;">标签：</div>
+                <div id="tags" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">创建者：</div>
+                <div id="creator" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">创建日期：</div>
+                <div id="createTime" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">更新日期：</div>
+                <div id="updateTime" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">音乐总数：</div>
+                <div id="trackCount" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">总时长：</div>
+                <div id="totaldt" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">播放次数：</div>
+                <div id="playCount" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;">收藏次数：</div>
+                <div id="subscribedCount" style="display: inline-block;"></div><br>
+            </div>
+            <button class="btn" id="originalUrl" style="margin: 8px 4px 0 4px;">访问原页面</button>
+            <button class="btn" style="margin: 8px 4px 0 4px;" onclick="javascript:openDialog('about');">关于本项目</button>
+        </div>
+        <hr style="margin: 16px 0;opacity: 0.5;">
+        <input class="search-bar" id="searchBar" placeholder="搜索音乐、作者和专辑">
+        <ol class="list" id="list"></ol>
+        <div id="resultCount" style="text-align: center;display: none;"></div>
+    </div>
+    <div class="dialog dialog-tiny" id="about">
+        <div class="dialog-title">关于本项目</div>
+        <div class="dialog-content">云音乐歌单：<br>
+            网易云音乐歌单解析及播放工具。<br>
+            Made by Burger Studio.<br>
+            <a href="https://github.com/fucklinux/NCMP" class="link">在 GitHub 中查看</a><br>
+        </div>
+        <div class="dialog-btns"><button class="btn" onclick="javascript:closeDialog('about');">关闭</button></div>
+    </div>
+    <div class="dialog" id="playing">
+        <div class="dialog-title">正在播放</div>
+        <div class="dialog-content">
+            <img id="songCover" class="cover-img">
+            <h3 id="songTitle" style="text-align: center;margin: 4px 0;"></h3>
+            <div class="info-list">
+                <div style="font-weight: bold;display: inline-block;">作者：</div>
+                <div id="songArtists" style="display: inline-block;"></div><br>
+                <div style="font-weight: bold;display: inline-block;margin-bottom: 4px;">专辑：</div>
+                <div id="songAlbum" style="display: inline-block;margin-bottom: 4px;"></div><br>
+                <a class="link" id="songOriginalPage">访问原音乐页面</a><br>
+                <a class="link" id="playLast" onclick="javascript:playLast();">播放上一首</a><br>
+                <a class="link" id="playNext" onclick="javascript:playNext();">播放下一首</a><br>
+                <a class="link" onclick="javascript:playRandom();">随机播放</a><br>
+                <a class="link" id="switchPlayingOrder">播放模式：顺序播放</a>
+            </div>
+            <div style="text-align: center;">
+                <audio id="songAudio" controls style="max-width: 100%;margin: 8px 0 0 0;"></audio>
+            </div>
+        </div>
+        <div class="dialog-btns"><button class="btn" onclick="javascript:closeDialog('playing');">关闭</button></div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <img class="float-cover" id="floatCover" onclick="javascript:openDialog('playing');">
+    <script>
+        //通过 ID 获取元素
+        function gebi(id) {
+            return document.getElementById(id);
+        }
+        //页面加载完成时执行
+        window.onload = function() {
+            //获取歌单 JSON
+            document.title = "正在获取歌单数据......";
+            var getPlaylist = new XMLHttpRequest();
+            getPlaylist.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        playlist = JSON.parse(this.responseText).playlist;
+                        document.title = "正在准备页面......";
+                        loadPlaylist();
+                    } catch (error) {
+                        document.title = "打开控制台以查看错误。";
+                        console.error(error);
+                    }
+                }
+            };
+            getPlaylist.open("GET", "playlist.json", true);
+            getPlaylist.send();
+        };
+        //载入歌单
+        function loadPlaylist() {
+            document.title = playlist.name;
+            gebi("coverImg").src = playlist.coverImgUrl;
+            var tags = "";
+            for (var n = 0; n < playlist.tags.length; n++) {
+                tags += playlist.tags[n];
+                tags += n == playlist.tags.length - 1 ? "" : " & ";
+            }
+            gebi("tags").innerText = playlist.tags == [] ? "无" : tags;
+            gebi("title").innerText = playlist.name;
+            gebi("description").innerText = playlist.description;
+            gebi("creator").innerHTML = `<a href="https://music.163.com/user/home?id=` + playlist.creator.userId + `" class="link">` + playlist.creator.nickname + `</a>`;
+            gebi("createTime").innerText = new Date(playlist.createTime).toLocaleString();
+            gebi("updateTime").innerText = new Date(playlist.updateTime).toLocaleString();
+            gebi("trackCount").innerText = playlist.trackCount;
+            var totaldt = 0;
+            var listContent = "";
+            for (var i = 0; i < playlist.tracks.length; i++) {
+                totaldt += playlist.tracks[i].dt;
+                var arnames = "";
+                for (var j = 0; j < playlist.tracks[i].ar.length; j++) {
+                    arnames += playlist.tracks[i].ar[j].name;
+                    arnames += j == playlist.tracks[i].ar.length - 1 ? "" : " & ";
+                }
+                listContent += `<li class="list-item" onclick="javascript:play(` + i + `);openDialog('playing');">
+                    <div class="list-item-title">` + playlist.tracks[i].name + `</div>
+                    <div class="list-item-content">` + arnames + " • " + playlist.tracks[i].al.name + `</div>
+                </li>`;
+            }
+            gebi("totaldt").innerText = dtCalc(totaldt / 1000);
+            gebi("playCount").innerText = playlist.playCount;
+            gebi("subscribedCount").innerText = playlist.subscribedCount;
+            gebi("originalUrl").onclick = function() {
+                location.href = "https://music.163.com/playlist?id=" + playlist.id;
+            };
+            gebi("list").innerHTML = listContent;
+            window.setTimeout(function() {
+                gebi("splash").classList.add("splash-hidden");
+            }, 100);
+        }
+        //时间戳（秒）转换为字符串（时：分：秒）
+        function dtCalc(timestamp) {
+            var h = parseInt(timestamp / (60 * 60)).toString().padStart(2, "0");
+            var m = parseInt(timestamp / 60 % 60).toString().padStart(2, "0");
+            var s = parseInt(timestamp % 60).toString().padStart(2, "0");
+            return h + ":" + m + ":" + s;
+        }
+        //播放音乐
+        function play(index) {
+            for (var n = 0; n < playlist.tracks.length; n++) {
+                document.getElementsByClassName("list-item")[n].classList.remove("list-item-active");
+            }
+            document.getElementsByClassName("list-item")[index].classList.add("list-item-active");
+            gebi("floatCover").classList.add("float-cover-opened");
+            gebi("floatCover").src = playlist.tracks[index].al.picUrl;
+            gebi("songCover").src = playlist.tracks[index].al.picUrl;
+            gebi("songTitle").innerText = playlist.tracks[index].name;
+            var arnames = "";
+            for (var i = 0; i < playlist.tracks[index].ar.length; i++) {
+                arnames += `<a href="https://music.163.com/artist?id=` + playlist.tracks[index].ar[i].id + `" class="link">` + playlist.tracks[index].ar[i].name + `</a>`;
+                arnames += i == playlist.tracks[index].ar.length - 1 ? "" : " & ";
+            }
+            gebi("songArtists").innerHTML = arnames;
+            gebi("songAlbum").innerHTML = `<a href="https://music.163.com/album?id=` + playlist.tracks[index].al.id + `" class="link">` + playlist.tracks[index].al.name + `</a>`;
+            gebi("songOriginalPage").href = "https://music.163.com/song?id=" + playlist.tracks[index].id;
+            gebi("playLast").classList.remove("link-disabled");
+            gebi("playNext").classList.remove("link-disabled");
+            gebi("songAudio").src = "https://music.163.com/song/media/outer/url?id=" + playlist.tracks[index].id + ".mp3";
+            gebi("songAudio").play();
+            if (index == 0) {
+                gebi("playLast").classList.add("link-disabled");
+            }
+            if (index == playlist.tracks.length - 1) {
+                gebi("playNext").classList.add("link-disabled");
+            }
+            playing = index;
+        }
+        //打开对话框
+        function openDialog(id) {
+            gebi(id).classList.add("dialog-opened");
+            gebi("overlay").classList.add("overlay-opened");
+        }
+        //关闭对话框
+        function closeDialog(id) {
+            gebi(id).classList.remove("dialog-opened");
+            gebi("overlay").classList.remove("overlay-opened");
+        }
+        //播放上一首
+        function playLast(loop) {
+            if (playing != 0) {
+                play(playing - 1);
+            } else if (loop) {
+                play(playlist.tracks.length - 1);
+            }
+        }
+        //播放下一首
+        function playNext(loop) {
+            if (playing != playlist.tracks.length - 1) {
+                play(playing + 1);
+            } else if (loop) {
+                play(0);
+            }
+        }
+        //随机播放
+        function playRandom() {
+            var randomIndex = generateRandomIndex();
+            if (randomIndex == playing) {
+                playRandom();
+            } else {
+                play(randomIndex);
+            }
+        }
+
+        function generateRandomIndex() {
+            return parseInt(Math.random() * playlist.tracks.length);
+        }
+        //搜索功能
+        gebi("searchBar").oninput = function() {
+            search(this.value);
+        };
+
+        function search(keyword) {
+            if (keyword == "") {
+                for (var i = 0; i < playlist.tracks.length; i++) {
+                    document.getElementsByClassName("list-item")[i].style.height = "auto";
+                    document.getElementsByClassName("list-item")[i].style.padding = "4px 8px";
+                    document.getElementsByClassName("list-item")[i].style.overflow = "visible";
+                    gebi("resultCount").style.display = "none";
+                }
+            } else {
+                var keywordLowerCase = keyword.toLowerCase();
+                var searchResults = 0;
+                for (var i = 0; i < playlist.tracks.length; i++) {
+                    var arnames = "";
+                    for (var j = 0; j < playlist.tracks[i].ar.length; j++) {
+                        arnames += playlist.tracks[i].ar[j].name;
+                        arnames += i == playlist.tracks[i].ar.length - 1 ? "" : " & ";
+                    }
+                    if (playlist.tracks[i].name.toLowerCase().indexOf(keywordLowerCase) != -1 || arnames.toLowerCase().indexOf(keywordLowerCase) != -1 || playlist.tracks[i].al.name.toLowerCase().indexOf(keywordLowerCase) != -1) {
+                        document.getElementsByClassName("list-item")[i].style.height = "auto";
+                        document.getElementsByClassName("list-item")[i].style.padding = "4px 8px";
+                        document.getElementsByClassName("list-item")[i].style.overflow = "visible";
+                        searchResults++;
+                    } else {
+                        document.getElementsByClassName("list-item")[i].style.height = "0";
+                        document.getElementsByClassName("list-item")[i].style.padding = "0";
+                        document.getElementsByClassName("list-item")[i].style.overflow = "hidden";
+                    }
+                }
+                gebi("resultCount").style.display = "block";
+                if (searchResults == 0) {
+                    gebi("resultCount").innerText = "没有匹配的结果";
+                } else {
+                    gebi("resultCount").innerText = searchResults + " 个匹配的结果";
+                }
+            }
+        }
+        //播放顺序
+        playingOrder = 0;
+        gebi("switchPlayingOrder").onclick = function() {
+            if (playingOrder == 0) {
+                playingOrder = 1;
+                gebi("switchPlayingOrder").innerText = "播放模式：单曲循环";
+            } else if (playingOrder == 1) {
+                playingOrder = 2;
+                gebi("switchPlayingOrder").innerText = "播放模式：随机播放";
+            } else if (playingOrder == 2) {
+                playingOrder = 3;
+                gebi("switchPlayingOrder").innerText = "播放模式：倒序播放";
+            } else if (playingOrder == 3) {
+                playingOrder = 0;
+                gebi("switchPlayingOrder").innerText = "播放模式：顺序播放";
+            }
+        };
+        gebi("songAudio").onended = function() {
+            if (playingOrder == 0) {
+                playNext(true);
+            } else if (playingOrder == 1) {
+                play(playing);
+            } else if (playingOrder == 2) {
+                playRandom();
+            } else if (playingOrder == 3) {
+                playLast(true);
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -414,12 +414,16 @@
         function loadPlaylist() {
             document.title = playlist.name;
             gebi("coverImg").src = playlist.coverImgUrl;
-            var tags = "";
-            for (var n = 0; n < playlist.tags.length; n++) {
-                tags += playlist.tags[n];
-                tags += n == playlist.tags.length - 1 ? "" : " & ";
+            if (playlist.tags.length == 0) {
+                gebi("tags").innerText = "无";
+            } else {
+                var tags = "";
+                for (var n = 0; n < playlist.tags.length; n++) {
+                    tags += playlist.tags[n];
+                    tags += n == playlist.tags.length - 1 ? "" : " & ";
+                }
+                gebi("tags").innerText = tags;
             }
-            gebi("tags").innerText = playlist.tags == [] ? "无" : tags;
             gebi("title").innerText = playlist.name;
             gebi("description").innerText = playlist.description;
             gebi("creator").innerHTML = `<a href="https://music.163.com/user/home?id=` + playlist.creator.userId + `" class="link">` + playlist.creator.nickname + `</a>`;

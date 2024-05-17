@@ -6,4 +6,9 @@
 1. 登录网易云音乐网页端
 2. 启动抓包工具，开始抓包
 3. 在网页中打开需要导入的歌单
-4. 保存抓取的 JSON 歌单信息文件，替换本项目下的 playlist.json
+4. 保存抓取的 JSON 歌单信息文件，替换本项目下的 playlist.json  
+
+其他示例歌单：  
+[示例歌单1](https://ncmp.netlify.app/jpdy/)  
+[示例歌单2](https://ncmp.netlify.app/ba/)  
+[示例歌单3](https://ncmp.netlify.app/baost/)

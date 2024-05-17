@@ -11,4 +11,8 @@
 其他示例歌单：  
 [示例歌单1](https://ncmp.netlify.app/jpdy/)  
 [示例歌单2](https://ncmp.netlify.app/ba/)  
-[示例歌单3](https://ncmp.netlify.app/baost/)
+[示例歌单3](https://ncmp.netlify.app/baost/)  
+[示例歌单4](https://ncmp.netlify.app/pika/)  
+[示例歌单5](https://ncmp.netlify.app/phi/)  
+
+[访问备用站点](https://bg.xbedrock.com/ncmp/)

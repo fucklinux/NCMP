@@ -1,5 +1,6 @@
 # NCM Playlist（云音乐歌单）
 网易云音乐歌单解析及播放工具。  
+可使用打包的 [Android 端](https://github.com/fucklinux/NCMP/releases)减少网络因素的影响，以获得更好的体验。
   
 注意：本项目并非直接通过链接解析歌单，需要手动获取歌单信息。  
 导入歌单大致方法：  

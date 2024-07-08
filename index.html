@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../favicon.png" type="image/x-icon">
     <title>云音乐歌单</title>
     <style>
         * {
@@ -57,7 +57,7 @@
             padding: 8px 32px;
             font-size: 16px;
             background: #ddd;
-            transition-property: transform;
+            transition-property: background, transform, font-weight;
             transition-duration: 0.2s;
             text-transform: uppercase;
         }
@@ -66,11 +66,12 @@
             outline: 2px solid #333;
         }
 
-        .btn:active {
+        .btn:active,
+        .btn-active {
             background: #aaa;
-            outline: 2px solid rgba(0, 0, 0, 0);
+            outline: 2px solid rgba(0, 0, 0, 0) !important;
             transform: scale(0.95);
-            transition-duration: 0s;
+            transition: 0s;
             font-weight: bold;
         }
 
@@ -81,32 +82,44 @@
         }
 
         .list-item {
-            padding: 4px 8px;
-            transition-property: transform, font-weight;
-            transition-duration: 0.2s;
+            transition: 0.2s;
         }
 
-        .list-item-active {
+        .list-item-actived {
             background: #BBDEFB;
         }
 
         .list-item:hover {
             background: #ddd;
+            transition: 0.1s;
         }
 
-        .list-item-active:hover {
+        .list-item-actived:hover {
             background: #90CAF9;
         }
 
-        .list-item:active {
-            background: #aaa;
-            transform: scale(0.95);
+        .list-item:active,
+        .list-item-active {
+            background: #aaa !important;
             transition: 0s;
-            font-weight: bold;
         }
 
-        .list-item-active:active {
-            background: #64B5F6;
+        .list-item-actived:active,
+        .list-item-actived-active {
+            background: #64B5F6 !important;
+            transition: 0s;
+        }
+
+        .list-item-container {
+            padding: 4px 8px;
+            transition: 0.3s;
+        }
+
+        .list-item-container:active,
+        .list-item-container-active {
+            transform: scale(0.9);
+            font-weight: bold;
+            transition: 0s;
         }
 
         .list-item-title {
@@ -140,6 +153,7 @@
                 width: 50%;
                 left: calc(25% - 16px);
                 transform: scale(1.05);
+                outline-width: 2px;
             }
         }
 
@@ -148,6 +162,14 @@
             top: calc(30% - 16px);
             width: 60%;
             left: calc(20% - 16px);
+        }
+
+        .dialog-max {
+            left: 0 !important;
+            top: 0 !important;
+            width: calc(100% - 32px) !important;
+            height: 100% !important;
+            transition-property: left, top, width, height, opacity, transform;
         }
 
         .dialog-opened {
@@ -172,11 +194,19 @@
             height: 15%;
         }
 
+        .dialog-max .dialog-title {
+            height: 6%;
+        }
+
         .dialog-content {
             width: 100%;
             height: calc(80% - 36px);
             padding: 12px 0;
             overflow-y: scroll;
+        }
+
+        .dialog-max .dialog-content {
+            height: calc(84% - 36px);
         }
 
         .dialog-tiny .dialog-content {
@@ -226,16 +256,22 @@
             -moz-user-select: none;
         }
 
-        .link-disabled {
-            color: #777 !important;
+        .dark .link {
+            color: #E6892D;
         }
 
         .link:hover {
             color: #777;
         }
 
-        .link:active {
-            color: #aaa;
+        .link:active,
+        .link-active {
+            color: #aaa !important;
+        }
+
+        .link-disabled,
+        .link-disabled:active {
+            color: #777 !important;
         }
 
         .float-cover {
@@ -252,7 +288,8 @@
             transition-delay: 0.3s, 0s;
         }
 
-        .float-cover:active {
+        .float-cover:active,
+        .float-cover-active {
             transform: scale(0.9);
             transition: 0s;
         }
@@ -272,7 +309,8 @@
             font-size: 16px;
         }
 
-        .search-bar:hover {
+        .search-bar:hover,
+        .search-bar-active {
             outline: 2px solid #666;
         }
 
@@ -291,7 +329,8 @@
                 margin-left: 25%;
             }
 
-            .list-item:active {
+            .list-item-container:active,
+            .list-item-container-active {
                 transform: scale(0.98);
             }
 
@@ -310,6 +349,84 @@
             .search-bar {
                 width: calc(50% - 16px);
                 margin-left: 25%;
+            }
+        }
+
+        .dark-overlay {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .dark .dark-overlay {
+            backdrop-filter: invert(1);
+        }
+
+        .dark .splash,
+        .dark .overlay,
+        .dark .cover-img,
+        .dark .float-cover {
+            filter: invert(1);
+        }
+
+        .dark .overlay {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .dark .dialog,
+        .dark .search-bar:focus {
+            outline-color: #E6892D;
+        }
+
+        .dark .list-item-actived {
+            background: #F2B85E;
+        }
+
+        .dark .list-item-actived:hover {
+            background: #EA9A3F;
+        }
+
+        .dark .list-item-actived:active,
+        .dark .list-item-actived-active {
+            background: #E6892D !important;
+        }
+
+        .message {
+            position: fixed;
+            z-index: 4;
+            top: 32px;
+            right: 0;
+            padding: 16px 24px 16px 20px;
+            background: #333;
+            color: #fff;
+            max-width: 256px;
+            outline: 2px solid #999;
+            transform: translateX(calc(100% + 2px));
+        }
+
+        .message-opened {
+            animation: 4s cubic-bezier(0, 1, 0.5, 1) 0s message;
+        }
+
+        @keyframes message {
+            0% {
+                transform: translateX(calc(100% + 2px));
+            }
+
+            12.5% {
+                transform: translateX(0);
+            }
+
+            87.5% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(calc(100% + 2px));
             }
         }
     </style>
@@ -344,7 +461,7 @@
                 <div style="font-weight: bold;display: inline-block;">收藏次数：</div>
                 <div id="subscribedCount" style="display: inline-block;"></div><br>
             </div>
-            <button class="btn" id="originalUrl" style="margin: 8px 4px 0 4px;">访问原页面</button>
+            <button class="btn" style="margin: 8px 4px 0 4px;" onclick="javascript:share();">分享此歌单</button>
             <button class="btn" style="margin: 8px 4px 0 4px;" onclick="javascript:openDialog('about');">关于本项目</button>
         </div>
         <hr style="margin: 16px 0;opacity: 0.5;">
@@ -365,17 +482,20 @@
         <div class="dialog-title">正在播放</div>
         <div class="dialog-content">
             <img id="songCover" class="cover-img">
-            <h3 id="songTitle" style="text-align: center;margin: 4px 0;"></h3>
+            <h3 id="songTitle" style="text-align: center;margin: 4px 0;"></h3><br>
             <div class="info-list">
                 <div style="font-weight: bold;display: inline-block;">作者：</div>
                 <div id="songArtists" style="display: inline-block;"></div><br>
                 <div style="font-weight: bold;display: inline-block;margin-bottom: 4px;">专辑：</div>
-                <div id="songAlbum" style="display: inline-block;margin-bottom: 4px;"></div><br>
-                <a class="link" id="songOriginalPage">访问原音乐页面</a><br>
-                <a class="link" id="playLast" onclick="javascript:playLast();">播放上一首</a><br>
-                <a class="link" id="playNext" onclick="javascript:playNext();">播放下一首</a><br>
-                <a class="link" onclick="javascript:playRandom();">随机播放</a><br>
-                <a class="link" id="switchPlayingOrder">播放模式：顺序播放</a>
+                <div id="songAlbum" style="display: inline-block;margin-bottom: 4px;"></div><br><br>
+                <a class="link" onclick="javascript:shareSong();">分享此音乐</a><br>
+                <a class="link" onclick="javascript:switchDialogSize();" id="dialogSize">启用全屏对话框</a><br>
+                <a class="link" id="switchPlayingOrder">播放模式：顺序播放</a><br><br>
+                <div style="text-align: center;">
+                    <a class="link" id="playLast" onclick="javascript:playLast();" style="float: left;">播放上一首</a>
+                    <a class="link" onclick="javascript:playRandom();">随机播放</a>
+                    <a class="link" id="playNext" onclick="javascript:playNext();" style="float: right;">播放下一首</a>
+                </div>
             </div>
             <div style="text-align: center;">
                 <audio id="songAudio" controls style="max-width: 100%;margin: 8px 0 0 0;"></audio>
@@ -384,7 +504,9 @@
         <div class="dialog-btns"><button class="btn" onclick="javascript:closeDialog('playing');">关闭</button></div>
     </div>
     <div class="overlay" id="overlay"></div>
+    <div class="dark-overlay"></div>
     <img class="float-cover" id="floatCover" onclick="javascript:openDialog('playing');">
+    <div class="message" id="message"></div>
     <script>
         //通过 ID 获取元素
         function gebi(id) {
@@ -409,6 +531,10 @@
             };
             getPlaylist.open("GET", "playlist.json", true);
             getPlaylist.send();
+            //检测主题设置
+            if (localStorage.getItem("darkTheme")) {
+                document.body.classList.add("dark");
+            }
         };
         //载入歌单
         function loadPlaylist() {
@@ -440,17 +566,17 @@
                     arnames += j == playlist.tracks[i].ar.length - 1 ? "" : " & ";
                 }
                 listContent += `<li class="list-item" onclick="javascript:play(` + i + `);openDialog('playing');">
-                    <div class="list-item-title">` + playlist.tracks[i].name + `</div>
-                    <div class="list-item-content">` + arnames + " • " + playlist.tracks[i].al.name + `</div>
+                    <div class="list-item-container">
+                        <div class="list-item-title">` + playlist.tracks[i].name + `</div>
+                        <div class="list-item-content">` + arnames + " • " + playlist.tracks[i].al.name + `</div>
+                    </div>
                 </li>`;
             }
             gebi("totaldt").innerText = dtCalc(totaldt / 1000);
             gebi("playCount").innerText = playlist.playCount;
             gebi("subscribedCount").innerText = playlist.subscribedCount;
-            gebi("originalUrl").onclick = function() {
-                location.href = "https://music.163.com/playlist?id=" + playlist.id;
-            };
             gebi("list").innerHTML = listContent;
+            touchActive();
             window.setTimeout(function() {
                 gebi("splash").classList.add("splash-hidden");
             }, 100);
@@ -465,9 +591,9 @@
         //播放音乐
         function play(index) {
             for (var n = 0; n < playlist.tracks.length; n++) {
-                document.getElementsByClassName("list-item")[n].classList.remove("list-item-active");
+                document.getElementsByClassName("list-item")[n].classList.remove("list-item-actived");
             }
-            document.getElementsByClassName("list-item")[index].classList.add("list-item-active");
+            document.getElementsByClassName("list-item")[index].classList.add("list-item-actived");
             gebi("floatCover").classList.add("float-cover-opened");
             gebi("floatCover").src = playlist.tracks[index].al.picUrl;
             gebi("songCover").src = playlist.tracks[index].al.picUrl;
@@ -479,7 +605,6 @@
             }
             gebi("songArtists").innerHTML = arnames;
             gebi("songAlbum").innerHTML = `<a href="https://music.163.com/album?id=` + playlist.tracks[index].al.id + `" class="link">` + playlist.tracks[index].al.name + `</a>`;
-            gebi("songOriginalPage").href = "https://music.163.com/song?id=" + playlist.tracks[index].id;
             gebi("playLast").classList.remove("link-disabled");
             gebi("playNext").classList.remove("link-disabled");
             gebi("songAudio").src = "https://music.163.com/song/media/outer/url?id=" + playlist.tracks[index].id + ".mp3";
@@ -491,6 +616,7 @@
                 gebi("playNext").classList.add("link-disabled");
             }
             playing = index;
+            touchActive();
         }
         //打开对话框
         function openDialog(id) {
@@ -540,7 +666,6 @@
             if (keyword == "") {
                 for (var i = 0; i < playlist.tracks.length; i++) {
                     document.getElementsByClassName("list-item")[i].style.height = "auto";
-                    document.getElementsByClassName("list-item")[i].style.padding = "4px 8px";
                     document.getElementsByClassName("list-item")[i].style.overflow = "visible";
                     gebi("resultCount").style.display = "none";
                 }
@@ -555,12 +680,10 @@
                     }
                     if (playlist.tracks[i].name.toLowerCase().indexOf(keywordLowerCase) != -1 || arnames.toLowerCase().indexOf(keywordLowerCase) != -1 || playlist.tracks[i].al.name.toLowerCase().indexOf(keywordLowerCase) != -1) {
                         document.getElementsByClassName("list-item")[i].style.height = "auto";
-                        document.getElementsByClassName("list-item")[i].style.padding = "4px 8px";
                         document.getElementsByClassName("list-item")[i].style.overflow = "visible";
                         searchResults++;
                     } else {
                         document.getElementsByClassName("list-item")[i].style.height = "0";
-                        document.getElementsByClassName("list-item")[i].style.padding = "0";
                         document.getElementsByClassName("list-item")[i].style.overflow = "hidden";
                     }
                 }
@@ -593,13 +716,76 @@
             if (playingOrder == 0) {
                 playNext(true);
             } else if (playingOrder == 1) {
-                play(playing);
+                gebi("songAudio").currentTime = 0;
+                gebi("songAudio").play();
             } else if (playingOrder == 2) {
                 playRandom();
             } else if (playingOrder == 3) {
                 playLast(true);
             }
         };
+        //触摸屏优化
+        function touchActive() {
+            var touchElements = ["list-item", "link", "list-item-container", "btn", "list-item-actived", "float-cover", "search-bar"];
+            var touchDelay = [0, 0, 0, 0, 0, 0, 0];
+            touchElements.forEach(function(item, delayIndex) {
+                document.querySelectorAll("." + item).forEach(function(itemObj, index) {
+                    itemObj.ontouchstart = function() {
+                        itemObj.classList.add(item + "-active");
+                    }
+                    itemObj.ontouchend = function() {
+                        window.setTimeout(function() {
+                            itemObj.classList.remove(item + "-active");
+                        }, touchDelay[delayIndex]);
+                    }
+                });
+            });
+        }
+        //复制文本
+        function copyHandle(content) {
+            let copy = (e) => {
+                e.preventDefault()
+                e.clipboardData.setData('text/plain', content)
+                document.removeEventListener('copy', copy)
+            }
+            document.addEventListener('copy', copy)
+            document.execCommand("Copy");
+            showMessage("已复制到剪贴板。");
+        }
+        //分享歌单
+        function share() {
+            copyHandle("分享「" + playlist.creator.nickname + "」的歌单「" + playlist.name + "」：" + "https://music.163.com/playlist?id=" + playlist.id);
+        }
+        //分享单曲
+        function shareSong() {
+            copyHandle("分享「" + gebi("songArtists").innerText + "」的音乐《" + gebi("songTitle").innerText + "》：" + "https://music.163.com/song?id=" + playlist.tracks[playing].id);
+        }
+        //显示消息
+        function showMessage(message) {
+            gebi("message").classList.remove("message-opened");
+            gebi("message").innerText = message;
+            window.setTimeout(function() {
+                gebi("message").classList.add("message-opened");
+            }, 0);
+        }
+        //调整对话框大小
+        dialogMax = 0;
+
+        function switchDialogSize() {
+            if (dialogMax == 0) {
+                gebi("playing").style.boxShadow = "none";
+                gebi("playing").classList.add("dialog-max");
+                gebi("dialogSize").innerText = "禁用全屏对话框";
+                dialogMax = 1;
+            } else {
+                window.setTimeout(function() {
+                    gebi("playing").style.boxShadow = "0 10px 20px 5px rgba(64, 64, 64, 0.5)";
+                }, 250);
+                gebi("playing").classList.remove("dialog-max");
+                gebi("dialogSize").innerText = "启用全屏对话框";
+                dialogMax = 0;
+            }
+        }
     </script>
 </body>
 
